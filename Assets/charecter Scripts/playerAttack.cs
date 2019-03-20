@@ -5,9 +5,10 @@ using UnityEngine;
 public class playerAttack : MonoBehaviour
 {
     public CharacterController2D controller;
+    public Animator animator;
+
     private float timebtwAttack;
     public float startTimeAttack;
-    public Animator animator;
 
     public Transform attackPos;
     public float attackRange;
@@ -21,16 +22,17 @@ public class playerAttack : MonoBehaviour
 
             if (Input.GetButtonDown("Fire1"))
             {
-                print("press 1");
+                
                 animator.SetBool("isattacking", true);
                 Collider2D[] enemiesToDamage = Physics2D.OverlapCircleAll(attackPos.position, attackRange, whatIsEnemies);
                 for (int i = 0; i < enemiesToDamage.Length; i++)
                 {
-                   // enemiesToDamage[i].GetComponent<Enemy>.health -= damage;
+                    enemiesToDamage[i].GetComponent<Enemy>().TakeDamage(damage);
                 }
             }
             else if (Input.GetButtonUp("Fire1"))
             {
+                print("frie1 up");
                 animator.SetBool("isattacking", false);
             }
 
@@ -41,5 +43,12 @@ public class playerAttack : MonoBehaviour
         else {
             timebtwAttack -= Time.deltaTime;
                 }
+
+        void OnDrawGizmosSelected()
+        {
+            Gizmos.color = Color.red;
+            Gizmos.DrawWireSphere(attackPos.position,attackRange);
+        }
+
     }
 }

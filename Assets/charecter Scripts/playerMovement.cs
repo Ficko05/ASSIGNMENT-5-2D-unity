@@ -14,10 +14,18 @@ public class playerMovement : MonoBehaviour
     bool crouch = false;
     bool isCrouching = false;
 
+    //
+    private float timebtwAttack;
+    public float startTimeAttack;
+    public Transform attackPos;
+    public float attackRange;
+    public LayerMask whatIsEnemies;
+    public int damage;
+
 
     void FixedUpdate()
     {
-        controller.Move(horizantalMove * Time.deltaTime,crouch,jump);
+        controller.Move(horizantalMove * Time.deltaTime, crouch, jump);
         jump = false;
         //crouch = false;
 
@@ -25,16 +33,14 @@ public class playerMovement : MonoBehaviour
 
     void Update()
     {
-       horizantalMove = Input.GetAxisRaw("Horizontal") * runspeed;
-        animator.SetFloat("speed", Mathf.Abs( horizantalMove));
+        horizantalMove = Input.GetAxisRaw("Horizontal") * runspeed;
+        animator.SetFloat("speed", Mathf.Abs(horizantalMove));
 
         if (Input.GetButtonDown("Jump"))
         {
             jump = true;
             animator.SetBool("isjumping", true);
         }
-        
-
 
         if (Input.GetButtonDown("Crouch"))
         {
@@ -47,10 +53,59 @@ public class playerMovement : MonoBehaviour
             animator.SetBool("iscrouching", false);
             crouch = false;
         }
+
+
+
+
+        /////
+        ///
+        //if (timebtwAttack <= 0)
+        //{
+
+        if (Input.GetButtonDown("Fire1"))
+        {
+
+            animator.SetBool("isattacking", true);
+            Collider2D[] enemiesToDamage = Physics2D.OverlapCircleAll(attackPos.position, attackRange, whatIsEnemies);
+            for (int i = 0; i < enemiesToDamage.Length; i++)
+            {
+                print("hitting");
+                enemiesToDamage[i].GetComponent<Enemy>().TakeDamage(damage);
+            }
+        }
+        else if (Input.GetButtonUp("Fire1"))
+        {
+            print("frie1 up");
+            animator.SetBool("isattacking", false);
+        }
+
+
+
+        timebtwAttack = startTimeAttack;
+        //}
+        //else
+        //{
+        //    timebtwAttack -= Time.deltaTime;
+        //}
+
+
+
+        ////
+
+
+    }
+    void OnDrawGizmosSelected()
+    {
+        Gizmos.color = Color.red;
+        Gizmos.DrawWireSphere(attackPos.position, attackRange);
     }
 
     public void onLanding()
     {
-            animator.SetBool("isjumping", false);
+        animator.SetBool("isjumping", false);
     }
+
+    
+
+    
 }
